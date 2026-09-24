@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // 1. Master Data Dasar & Pengguna
             WorkUnitSeeder::class,
             DistrictAndVillageSeeder::class,
             ServiceTypeSeeder::class,
@@ -23,6 +24,14 @@ class DatabaseSeeder extends Seeder
             ReferralInstitutionSeeder::class,
             ComplaintCategorySeeder::class,
             UserSeeder::class,
+
+            // 2. Data Transaksi Layanan PRD (Layanan 1 - 6)
+            DtsenServiceRequestSeeder::class,
+            PbiServiceRequestSeeder::class,
+            RehabilitationSeeder::class,
+            GeneralServiceRequestSeeder::class,
+            ComplaintSeeder::class,
+            InformationPortalSeeder::class,
         ]);
     }
 }
