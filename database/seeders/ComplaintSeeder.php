@@ -19,6 +19,10 @@ class ComplaintSeeder extends Seeder
 {
     public function run(): void
     {
+        if (Complaint::where('reporter_name', 'Agus Wicaksono (Ketua RT)')->exists()) {
+            return;
+        }
+
         $catRehsos = ComplaintCategory::where('name', 'like', '%Rehabilitasi%')->first();
         $catBansos = ComplaintCategory::where('name', 'like', '%Bantuan Sosial%')->first();
         $catKemiskinan = ComplaintCategory::where('name', 'like', '%Kemiskinan%')->first();

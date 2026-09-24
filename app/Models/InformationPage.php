@@ -54,6 +54,11 @@ class InformationPage extends Model
         return $this->hasMany(DownloadableForm::class);
     }
 
+    public function downloadableForms(): HasMany
+    {
+        return $this->hasMany(DownloadableForm::class);
+    }
+
     public function faqs(): HasMany
     {
         return $this->hasMany(Faq::class)->orderBy('sort_order');

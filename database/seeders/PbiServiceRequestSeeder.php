@@ -190,6 +190,14 @@ class PbiServiceRequestSeeder extends Seeder
         ];
 
         foreach ($samples as $sample) {
+            if (ServiceRequest::where('service_type_id', $pbiType->id)->where('applicant_nik', $sample['applicant_nik'])->exists()) {
+                continue;
+            }
+
+            if (! empty($sample['rec_number']) && PbiReactivation::where('recommendation_number', $sample['rec_number'])->exists()) {
+                continue;
+            }
+
             $reqNumber = NumberSequence::generateNext('PBI', $sample['submitted_at']);
 
             $request = ServiceRequest::create([

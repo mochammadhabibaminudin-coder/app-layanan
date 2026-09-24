@@ -191,6 +191,14 @@ class DtsenServiceRequestSeeder extends Seeder
         ];
 
         foreach ($samples as $sample) {
+            if (ServiceRequest::where('service_type_id', $dtsenType->id)->where('applicant_nik', $sample['applicant_nik'])->exists()) {
+                continue;
+            }
+
+            if (! empty($sample['cert_number']) && DtsenCertificate::where('certificate_number', $sample['cert_number'])->exists()) {
+                continue;
+            }
+
             $reqNumber = NumberSequence::generateNext('DTSEN', $sample['submitted_at']);
 
             $request = ServiceRequest::create([

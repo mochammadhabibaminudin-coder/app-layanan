@@ -52,6 +52,11 @@ class DtsenCertificate extends Model
         return $this->belongsTo(DtsenPurpose::class, 'dtsen_purpose_id');
     }
 
+    public function dtsenPurpose(): BelongsTo
+    {
+        return $this->belongsTo(DtsenPurpose::class, 'dtsen_purpose_id');
+    }
+
     public function checker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'checker_id');

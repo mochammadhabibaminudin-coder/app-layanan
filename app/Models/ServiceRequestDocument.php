@@ -36,4 +36,9 @@ class ServiceRequestDocument extends Model
     {
         return $this->belongsTo(ServiceRequirement::class, 'service_requirement_id');
     }
+
+    public function serviceRequirement(): BelongsTo
+    {
+        return $this->belongsTo(ServiceRequirement::class, 'service_requirement_id');
+    }
 }

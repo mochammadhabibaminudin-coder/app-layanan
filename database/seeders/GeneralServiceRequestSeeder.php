@@ -24,6 +24,10 @@ class GeneralServiceRequestSeeder extends Seeder
             return;
         }
 
+        if (ServiceRequest::where('service_type_id', $bansosType->id)->where('applicant_nik', '3505054101700001')->exists()) {
+            return;
+        }
+
         $workUnit = WorkUnit::where('name', 'like', '%Dayasos%')->first();
         $officer = User::where('email', 'petugas.pelayanan@dinsos.blitarkab.go.id')->first();
         $srengat = Village::where('name', 'Srengat')->first();

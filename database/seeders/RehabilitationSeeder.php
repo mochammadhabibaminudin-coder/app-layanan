@@ -23,6 +23,10 @@ class RehabilitationSeeder extends Seeder
 {
     public function run(): void
     {
+        if (Client::where('name', 'Mbah Marto Wiyono')->exists()) {
+            return;
+        }
+
         $officer = User::where('email', 'petugas.rehsos@dinsos.blitarkab.go.id')->first();
 
         $catLansia = ClientCategory::where('name', 'like', '%Lanjut Usia%')->first();

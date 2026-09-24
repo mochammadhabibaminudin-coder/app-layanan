@@ -17,6 +17,10 @@ class InformationPortalSeeder extends Seeder
 {
     public function run(): void
     {
+        if (InformationPage::where('slug', 'surat-keterangan-dtsen')->exists()) {
+            return;
+        }
+
         $admin = User::where('email', 'admin@dinsos.blitarkab.go.id')->first();
         $dtsenType = ServiceType::where('code', 'DTSEN')->first();
         $pbiType = ServiceType::where('code', 'PBI')->first();
