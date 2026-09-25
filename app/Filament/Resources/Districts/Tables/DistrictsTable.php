@@ -15,17 +15,22 @@ class DistrictsTable
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->searchable(),
+                    ->label('Kode Kecamatan')
+                    ->badge()
+                    ->color('primary')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Nama Kecamatan')
+                    ->weight('bold')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('villages_count')
+                    ->counts('villages')
+                    ->label('Jumlah Desa/Kelurahan')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
             ])
             ->filters([
                 //

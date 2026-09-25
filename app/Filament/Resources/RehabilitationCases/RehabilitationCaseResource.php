@@ -52,7 +52,10 @@ class RehabilitationCaseResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AssessmentsRelationManager::class,
+            RelationManagers\ReferralsRelationManager::class,
+            RelationManagers\MonitoringRecordsRelationManager::class,
+            RelationManagers\StatusHistoriesRelationManager::class,
         ];
     }
 

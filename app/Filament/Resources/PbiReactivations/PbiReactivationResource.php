@@ -52,7 +52,7 @@ class PbiReactivationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            \App\Filament\Resources\DtsenCertificates\RelationManagers\ApprovalsRelationManager::class,
         ];
     }
 

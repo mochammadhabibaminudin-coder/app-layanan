@@ -14,22 +14,25 @@ class FaqsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order', 'asc')
             ->columns([
-                TextColumn::make('informationPage.title')
-                    ->searchable(),
                 TextColumn::make('sort_order')
-                    ->numeric()
+                    ->label('No.')
                     ->sortable(),
+                TextColumn::make('question')
+                    ->label('Pertanyaan (FAQ)')
+                    ->weight('bold')
+                    ->searchable()
+                    ->wrap(),
+                TextColumn::make('informationPage.title')
+                    ->label('Layanan Terkait')
+                    ->badge()
+                    ->color('info')
+                    ->placeholder('(Umum)'),
                 IconColumn::make('is_active')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Aktif')
+                    ->boolean()
+                    ->sortable(),
             ])
             ->filters([
                 //

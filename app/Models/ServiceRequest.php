@@ -48,6 +48,58 @@ class ServiceRequest extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (ServiceRequest $model): void {
+            if (blank($model->request_number)) {
+                $serviceType = $model->serviceType ?? ServiceType::find($model->service_type_id);
+                $prefix = match ($serviceType?->code) {
+                    'DTSEN' => 'DTSEN',
+                    'PBI' => 'PBI',
+                    'REHSOS' => 'RHS',
+                    default => strtoupper($serviceType?->code ?? 'REQ'),
+                };
+                $model->request_number = NumberSequence::generateNext($prefix, $model->submitted_at ?? now());
+            }
+            if (blank($model->submitted_at)) {
+                $model->submitted_at = now();
+            }
+        });
+
+        static::created(function (ServiceRequest $model): void {
+            $toStatus = $model->status instanceof \BackedEnum ? $model->status->value : (string) $model->status;
+            $model->statusHistories()->create([
+                'from_status' => null,
+                'to_status' => $toStatus,
+                'notes' => 'Pengajuan layanan baru dibuat',
+                'user_id' => auth()->id() ?? $model->submitter_id,
+            ]);
+        });
+
+        static::updating(function (ServiceRequest $model): void {
+            if ($model->isDirty('status')) {
+                $oldStatus = $model->getOriginal('status');
+                $newStatus = $model->status;
+                $model->statusHistories()->create([
+                    'from_status' => $oldStatus instanceof \BackedEnum ? $oldStatus->value : (string) $oldStatus,
+                    'to_status' => $newStatus instanceof \BackedEnum ? $newStatus->value : (string) $newStatus,
+                    'notes' => $model->officer_notes ?: 'Perubahan status pengajuan layanan',
+                    'user_id' => auth()->id(),
+                ]);
+            }
+        });
+    }
+
+    public function transitionTo(ServiceRequestStatus|string $newStatus, ?string $notes = null): void
+    {
+        $statusValue = $newStatus instanceof ServiceRequestStatus ? $newStatus : ServiceRequestStatus::from((string) $newStatus);
+        $this->status = $statusValue;
+        if ($notes) {
+            $this->officer_notes = $notes;
+        }
+        $this->save();
+    }
+
     public function serviceType(): BelongsTo
     {
         return $this->belongsTo(ServiceType::class);

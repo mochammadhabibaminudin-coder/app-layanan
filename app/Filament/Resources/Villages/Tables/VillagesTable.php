@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class VillagesTable
@@ -15,22 +16,26 @@ class VillagesTable
         return $table
             ->columns([
                 TextColumn::make('district.name')
-                    ->searchable(),
+                    ->label('Kecamatan')
+                    ->badge()
+                    ->color('info')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('code')
+                    ->label('Kode Desa')
+                    ->badge()
+                    ->color('gray')
                     ->searchable(),
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Nama Desa / Kelurahan')
+                    ->weight('bold')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('district_id')
+                    ->label('Kecamatan')
+                    ->relationship('district', 'name'),
             ])
             ->recordActions([
                 EditAction::make(),

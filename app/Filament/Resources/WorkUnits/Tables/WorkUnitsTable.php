@@ -16,17 +16,14 @@ class WorkUnitsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nama Unit Kerja')
+                    ->weight('bold')
+                    ->searchable()
+                    ->sortable(),
                 IconColumn::make('is_active')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Aktif')
+                    ->boolean()
+                    ->sortable(),
             ])
             ->filters([
                 //

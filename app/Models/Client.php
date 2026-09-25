@@ -46,4 +46,9 @@ class Client extends Model
     {
         return $this->hasMany(RehabilitationCase::class);
     }
+
+    public function cases(): HasMany
+    {
+        return $this->rehabilitationCases();
+    }
 }

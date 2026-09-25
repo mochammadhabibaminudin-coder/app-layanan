@@ -35,6 +35,51 @@ class Referral extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (Referral $model): void {
+            if (blank($model->referral_number)) {
+                $model->referral_number = NumberSequence::generateNext('RJK', $model->referral_date ?? now());
+            }
+            if (blank($model->referral_date)) {
+                $model->referral_date = now()->toDateString();
+            }
+        });
+
+        static::created(function (Referral $model): void {
+            $toStatus = $model->status instanceof \BackedEnum ? $model->status->value : (string) $model->status;
+            $model->statusHistories()->create([
+                'from_status' => null,
+                'to_status' => $toStatus,
+                'notes' => 'Rujukan baru dibuat',
+                'user_id' => auth()->id() ?? $model->officer_id,
+            ]);
+        });
+
+        static::updating(function (Referral $model): void {
+            if ($model->isDirty('status')) {
+                $oldStatus = $model->getOriginal('status');
+                $newStatus = $model->status;
+                $model->statusHistories()->create([
+                    'from_status' => $oldStatus instanceof \BackedEnum ? $oldStatus->value : (string) $oldStatus,
+                    'to_status' => $newStatus instanceof \BackedEnum ? $newStatus->value : (string) $newStatus,
+                    'notes' => $model->service_result ?: 'Perubahan status rujukan',
+                    'user_id' => auth()->id(),
+                ]);
+            }
+        });
+    }
+
+    public function transitionTo(ReferralStatus|string $newStatus, ?string $notes = null): void
+    {
+        $statusValue = $newStatus instanceof ReferralStatus ? $newStatus : ReferralStatus::from((string) $newStatus);
+        $this->status = $statusValue;
+        if ($notes) {
+            $this->service_result = $notes;
+        }
+        $this->save();
+    }
+
     public function rehabilitationCase(): BelongsTo
     {
         return $this->belongsTo(RehabilitationCase::class);

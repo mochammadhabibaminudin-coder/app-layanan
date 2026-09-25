@@ -52,7 +52,9 @@ class ComplaintResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AttachmentsRelationManager::class,
+            RelationManagers\DispositionsRelationManager::class,
+            RelationManagers\StatusHistoriesRelationManager::class,
         ];
     }
 

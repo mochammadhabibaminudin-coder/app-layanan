@@ -52,7 +52,9 @@ class ServiceRequestResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\DocumentsRelationManager::class,
+            RelationManagers\DispositionsRelationManager::class,
+            RelationManagers\StatusHistoriesRelationManager::class,
         ];
     }
 

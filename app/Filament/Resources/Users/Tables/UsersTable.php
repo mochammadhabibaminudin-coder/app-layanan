@@ -5,8 +5,10 @@ namespace App\Filament\Resources\Users\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -16,36 +18,37 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
-                TextColumn::make('email_verified_at')
-                    ->dateTime()
+                    ->label('Nama Pengguna')
+                    ->weight('bold')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('email')
+                    ->label('Email')
+                    ->copyable()
+                    ->searchable(),
                 TextColumn::make('phone')
-                    ->searchable(),
-                TextColumn::make('nik')
-                    ->searchable(),
+                    ->label('No. HP / WA')
+                    ->icon(Heroicon::OutlinedPhone)
+                    ->searchable()
+                    ->placeholder('-'),
                 TextColumn::make('workUnit.name')
-                    ->searchable(),
+                    ->label('Unit Kerja')
+                    ->badge()
+                    ->color('info')
+                    ->placeholder('-'),
                 TextColumn::make('district.name')
-                    ->searchable(),
-                TextColumn::make('village.name')
-                    ->searchable(),
+                    ->label('Kecamatan')
+                    ->description(fn ($record) => $record->village?->name ?? '')
+                    ->placeholder('(Seluruh Kab. Blitar)'),
                 IconColumn::make('is_active')
-                    ->boolean(),
+                    ->label('Aktif')
+                    ->boolean()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('work_unit_id')
+                    ->label('Unit Kerja')
+                    ->relationship('workUnit', 'name'),
             ])
             ->recordActions([
                 EditAction::make(),

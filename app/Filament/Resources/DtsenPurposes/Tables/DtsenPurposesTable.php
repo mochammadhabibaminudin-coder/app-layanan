@@ -16,25 +16,32 @@ class DtsenPurposesTable
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->searchable(),
+                    ->label('Kode')
+                    ->badge()
+                    ->color('primary')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Tujuan Penggunaan')
+                    ->weight('bold')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('max_decile')
-                    ->numeric()
+                    ->label('Batas Maksimal Desil')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => "Maks. Desil {$state}")
+                    ->color('warning')
                     ->sortable(),
                 TextColumn::make('validity_days')
-                    ->numeric()
+                    ->label('Masa Berlaku')
+                    ->formatStateUsing(fn ($state) => $state ? "{$state} Hari" : 'Selamanya')
+                    ->badge()
+                    ->color('info')
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Aktif')
+                    ->boolean()
+                    ->sortable(),
             ])
             ->filters([
                 //

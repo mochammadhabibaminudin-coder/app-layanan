@@ -43,7 +43,7 @@ class ServiceTypeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\RequirementsRelationManager::class,
         ];
     }
 

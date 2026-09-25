@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Clients\Tables;
 
+use App\Enums\ClientGender;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -9,6 +10,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
@@ -17,38 +19,46 @@ class ClientsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('client_category_id')
-                    ->numeric()
+                    ->label('Nama Klien')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+                TextColumn::make('category.name')
+                    ->label('Kategori PPKS')
+                    ->badge()
+                    ->color('purple')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('nik')
-                    ->searchable(),
-                TextColumn::make('birth_date')
-                    ->date()
-                    ->sortable(),
+                    ->label('NIK')
+                    ->searchable()
+                    ->placeholder('(Tanpa NIK)'),
                 TextColumn::make('gender')
+                    ->label('Gender')
                     ->badge()
-                    ->searchable(),
+                    ->formatStateUsing(fn ($state) => $state instanceof ClientGender ? $state->label() : ($state === 'male' ? 'Laki-laki' : 'Perempuan'))
+                    ->color(fn ($state) => ($state === 'male' || $state === ClientGender::Male) ? 'info' : 'pink'),
                 TextColumn::make('village.name')
-                    ->searchable(),
+                    ->label('Desa / Kelurahan')
+                    ->searchable()
+                    ->placeholder('-'),
                 TextColumn::make('phone')
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Kontak')
+                    ->searchable()
+                    ->placeholder('-'),
+                TextColumn::make('cases_count')
+                    ->counts('cases')
+                    ->label('Jumlah Kasus')
+                    ->badge()
+                    ->color('primary'),
             ])
             ->filters([
+                SelectFilter::make('client_category_id')
+                    ->label('Kategori PPKS')
+                    ->relationship('category', 'name'),
                 TrashedFilter::make(),
             ])
             ->recordActions([

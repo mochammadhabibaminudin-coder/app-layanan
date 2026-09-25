@@ -41,6 +41,51 @@ class Complaint extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (Complaint $model): void {
+            if (blank($model->complaint_number)) {
+                $model->complaint_number = NumberSequence::generateNext('ADU', $model->reported_at ?? now());
+            }
+            if (blank($model->reported_at)) {
+                $model->reported_at = now();
+            }
+        });
+
+        static::created(function (Complaint $model): void {
+            $toStatus = $model->status instanceof \BackedEnum ? $model->status->value : (string) $model->status;
+            $model->statusHistories()->create([
+                'from_status' => null,
+                'to_status' => $toStatus,
+                'notes' => 'Laporan pengaduan baru diterima',
+                'user_id' => auth()->id() ?? $model->reporter_id,
+            ]);
+        });
+
+        static::updating(function (Complaint $model): void {
+            if ($model->isDirty('status')) {
+                $oldStatus = $model->getOriginal('status');
+                $newStatus = $model->status;
+                $model->statusHistories()->create([
+                    'from_status' => $oldStatus instanceof \BackedEnum ? $oldStatus->value : (string) $oldStatus,
+                    'to_status' => $newStatus instanceof \BackedEnum ? $newStatus->value : (string) $newStatus,
+                    'notes' => $model->verification_result ?: 'Perubahan status pengaduan',
+                    'user_id' => auth()->id(),
+                ]);
+            }
+        });
+    }
+
+    public function transitionTo(ComplaintStatus|string $newStatus, ?string $notes = null): void
+    {
+        $statusValue = $newStatus instanceof ComplaintStatus ? $newStatus : ComplaintStatus::from((string) $newStatus);
+        $this->status = $statusValue;
+        if ($notes) {
+            $this->verification_result = $notes;
+        }
+        $this->save();
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(ComplaintCategory::class, 'complaint_category_id');
